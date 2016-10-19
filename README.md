@@ -12,7 +12,8 @@ where x_{n} is nth input. In the above formula, all intermediate results are on 
 
 * There is one more challange, the second sommand in formula above which is a division. If the division is integer division, this can result in cut off, and these can be add up to sizable amount. Therefore, we need to keep track of the cummulated remainder (CMR) of the division. The formulas get updated to followings.
 
-CMA_{n+1} = CMA_{n} + (x_{n+1} - CMA_{n} + CMR_{n}) div (n+1) 
+CMA_{n+1} = CMA_{n} + (x_{n+1} - CMA_{n} + CMR_{n}) div (n+1)   
+
 CMR_{n+1} = (x_{n+1} - CMA_{n} + CMR_{n}) mod (n+1)
 
 The biggest intermediate value in this case is divisor in both formulas, i.e., (x_{n+1} - CMA_{n} + CMR_{n}). The subtraction can at most be difference between smallest and largest input x and the CMR can be any value between -n to n. Therefor, there would be no overflow, as long as the number of elements does not get close to the maximum integer value of integer type being used. For type int the largest integer is 2,147,483,647 and for type long, the largest signed long is 2^{63} - 1 and in java 8, you can specify unsigned long with maximum of 2^{64} - 1.
