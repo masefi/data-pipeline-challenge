@@ -16,5 +16,9 @@ CMA_{n+1} = CMA_{n} + (x_{n+1} - CMA_{n} + CMR_{n}) div (n+1)
 
 CMR_{n+1} = (x_{n+1} - CMA_{n} + CMR_{n}) mod (n+1)
 
-The biggest intermediate value in this case is divisor in both formulas, i.e., (x_{n+1} - CMA_{n} + CMR_{n}). The subtraction can at most be difference between smallest and largest input x and the CMR can be any value between -n to n. Therefor, there would be no overflow, as long as the number of elements does not get close to the maximum integer value of integer type being used. For type int the largest integer is 2,147,483,647 and for type long, the largest signed long is 2^{63} - 1 and in java 8, you can specify unsigned long with maximum of 2^{64} - 1.
-      
+The biggest intermediate value in this case is divisor in both formulas, i.e., (x_{n+1} - CMA_{n} + CMR_{n}). The subtraction can at most be difference between smallest and largest input x and the CMR can be any value between -n to n. Therefor, there would be no overflow, as long as the number of elements does not get close to the maximum integer value of integer type being used. For type int the largest integer is 2,147,483,647 and for type long, the largest signed long is 2^{63} - 1 and in java 8, you can specify unsigned long with maximum of 2^{64} - 1. Based on the discussion, we choose int data type for CMA which has a value in order of individual inputs. number of inputs can grow very large, hence long data type has been choosen. CMR and the intermediate summand (x_{n+1} - CMA_{n} + CMR_{n}) are in order of n, hence long data type is used for these variables. 
+
+# Filtering the Top K=100 Arrival Delays
+* The output of previouse step <route, mean arrival delay> is input of this step which is another map-reduce pattern. The mappers find their local top K, then all the indiiudal top K sets will compte for final top K in reduce step. Since the number of records coming out of mappers is at most K=100 and K is relatively small, there is a need for only one reducer.
+
+* Tools such as apache oozie can be used to chain the jobs. Here, we chain the jobs within driver method.           
