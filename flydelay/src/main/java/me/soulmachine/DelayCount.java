@@ -12,6 +12,10 @@ import org.apache.hadoop.mapreduce.Reducer;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 
+import me.soulmachine.FilterTopK.TopKReducer;
+import me.soulmachine.FilterTopK.TopKMapper;
+
+
 public class DelayCount {
 
     public static class TokenizerMapper
@@ -61,20 +65,26 @@ public class DelayCount {
         public void reduce(Text key, Iterable<IntWritable> values,
                            Context context
         ) throws IOException, InterruptedException {
-            int sum = 0;
-            int count = 0;
+            int cma = 0;
+            long cmr = 0;
+            long addendum;
+            long n_values = 0;
             for (IntWritable val : values) {
-                sum += val.get();
-                count += 1;
+                ++n_values;
+                addendum = val.get() - cma + cmr;
+                cma += addendum / n_values;
+                cmr = addendum % n_values;
             }
-            result.set(sum/count);
+            result.set(cma);
             context.write(key, result);
         }
     }
 
     public static void main(String[] args) throws Exception {
+
+        // First job
         Configuration conf = new Configuration();
-        Job job = new Job(conf, "delay count");
+        Job job = new Job(conf, "DelayCount");
         job.setJarByClass(DelayCount.class);
         job.setMapperClass(TokenizerMapper.class);
         job.setCombinerClass(IntMeanReducer.class);
@@ -83,6 +93,20 @@ public class DelayCount {
         job.setOutputValueClass(IntWritable.class);
         FileInputFormat.addInputPath(job, new Path(args[0]));
         FileOutputFormat.setOutputPath(job, new Path(args[1]));
+        job.waitForCompletion(true);
+
+        //Second Job
+        Configuration conf2 = new Configuration();
+        Job job2 = new Job(conf2, "FilterTopK");
+        job2.setOutputKeyClass(Text.class);
+        job2.setOutputValueClass(IntWritable.class);
+        job2.setMapperClass(TopKMapper.class);
+        job2.setCombinerClass(TopKReducer.class);
+        job2.setReducerClass(TopKReducer.class);
+        FileInputFormat.setInputPaths(job2, new Path(args[1]));
+        FileOutputFormat.setOutputPath(job2, new Path("top_k_output"));
+        job2.setNumReduceTasks(1);
+
         System.exit(job.waitForCompletion(true) ? 0 : 1);
     }
 
