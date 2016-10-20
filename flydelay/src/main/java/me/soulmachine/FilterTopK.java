@@ -8,19 +8,16 @@ import org.apache.hadoop.io.NullWritable;
 import java.io.IOException;
 import java.util.TreeMap;
 
-
 public class FilterTopK {
 
-    public static class TopKMapper extends Mapper<Object,Text,NullWritable,Text> {
+    public static class TopKMapper extends Mapper<Text,Text,NullWritable,Text> {
 
         private static final int K = 100;
         private TreeMap<Integer, Text> topTreeMap = new TreeMap<Integer, Text>();
 
-        public void map(Object key, Text value, Context context) throws IOException, InterruptedException {
+        public void map(Text key, Text value, Context context) throws IOException, InterruptedException {
 
-            String[] tokens = value.toString().split("\t");
-            int avg = Integer.parseInt(tokens[1]);
-            topTreeMap.put(avg, new Text(value));
+            topTreeMap.put(Integer.parseInt(value.toString()), new Text(key.toString() + "\t" +value.toString()));
             if (topTreeMap.size() > K) {
                 topTreeMap.remove(topTreeMap.firstKey());
             }
@@ -34,7 +31,6 @@ public class FilterTopK {
 
     }
 
-
     public static class TopKReducer extends Reducer<NullWritable, Text, NullWritable, Text> {
 
         private static final int K = 100;
@@ -44,7 +40,7 @@ public class FilterTopK {
             for (Text value : values) {
 
                 String[] tokens = value.toString().split("\t");
-                int avg = Integer.parseInt(tokens[1]);
+                Integer avg = Integer.parseInt(tokens[1]);
                 topTreeMap.put(avg, new Text(value));
                 if (topTreeMap.size() > K) {
                     topTreeMap.remove(topTreeMap.firstKey());

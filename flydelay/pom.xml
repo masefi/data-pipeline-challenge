@@ -60,7 +60,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>me.soulmachine.DelayCount</mainClass>
+                            <mainClass>me.soulmachine.Driver</mainClass>
                         </manifest>
                     </archive>
                 </configuration>

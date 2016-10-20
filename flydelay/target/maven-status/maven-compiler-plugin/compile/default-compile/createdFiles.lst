@@ -1,6 +1,7 @@
-me/soulmachine/DelayCount$IntMeanReducer.class
 me/soulmachine/DelayCount.class
-me/soulmachine/FilterTopK$TopKReducer.class
 me/soulmachine/FilterTopK.class
 me/soulmachine/DelayCount$TokenizerMapper.class
 me/soulmachine/FilterTopK$TopKMapper.class
+me/soulmachine/Driver.class
+me/soulmachine/DelayCount$IntMeanReducer.class
+me/soulmachine/FilterTopK$TopKReducer.class

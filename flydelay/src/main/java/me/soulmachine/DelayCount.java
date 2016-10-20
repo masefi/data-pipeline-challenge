@@ -80,34 +80,4 @@ public class DelayCount {
         }
     }
 
-    public static void main(String[] args) throws Exception {
-
-        // First job
-        Configuration conf = new Configuration();
-        Job job = new Job(conf, "DelayCount");
-        job.setJarByClass(DelayCount.class);
-        job.setMapperClass(TokenizerMapper.class);
-        job.setCombinerClass(IntMeanReducer.class);
-        job.setReducerClass(IntMeanReducer.class);
-        job.setOutputKeyClass(Text.class);
-        job.setOutputValueClass(IntWritable.class);
-        FileInputFormat.addInputPath(job, new Path(args[0]));
-        FileOutputFormat.setOutputPath(job, new Path(args[1]));
-        job.waitForCompletion(true);
-
-        //Second Job
-        Configuration conf2 = new Configuration();
-        Job job2 = new Job(conf2, "FilterTopK");
-        job2.setOutputKeyClass(Text.class);
-        job2.setOutputValueClass(IntWritable.class);
-        job2.setMapperClass(TopKMapper.class);
-        job2.setCombinerClass(TopKReducer.class);
-        job2.setReducerClass(TopKReducer.class);
-        FileInputFormat.setInputPaths(job2, new Path(args[1]));
-        FileOutputFormat.setOutputPath(job2, new Path("top_k_output"));
-        job2.setNumReduceTasks(1);
-
-        System.exit(job.waitForCompletion(true) ? 0 : 1);
-    }
-
 }
